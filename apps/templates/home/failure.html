@@ -1,0 +1,41 @@
+ {% extends "layouts/base.html" %}
+
+{% block title %} Settings {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="mt-5">
+
+    <div class="row">
+        <div class="col-12 col-xl-12">
+            <div class="card card-body border-0 shadow mb-4" style="height:300px;text-align:center;padding-top: 100px;">
+                <div style="padding: 20px;color: red;font-weight: bold;">
+               Error while sending request
+                </div>
+                <div>
+                    <a href="/dashboard.html" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
+              Dashboard
+          </a>
+
+                     <a href="/model.html" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
+
+              Create Slice
+          </a>
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %} {% endblock javascripts %}
+

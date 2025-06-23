@@ -1,0 +1,175 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<style>
+    tr{
+    text-align: center;
+    }
+</style>
+
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes style="list-style-type: none;">
+    {% for message in messages %}
+        {% if message == 'Error While Creating Slice' %}
+            <li style="color: red;font-weight: bold;">{{ message }}</li>
+        {% elif message ==  'Slice Created Successfully' %}
+                <li style="color: #2aa92a;font-weight: bold;">{{ message }}</li>
+
+        {% endif %}
+
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+{% block body %}{% endblock %}
+
+
+
+
+
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+      <div class="d-block mb-4 mb-md-0">
+          <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
+              <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+                  <li class="breadcrumb-item">
+                      <a href="#">
+                          <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                      </a>
+                  </li>
+                  <li class="breadcrumb-item"><a href="#">TSC</a></li>
+              </ol>
+          </nav>
+          <h2 class="h4">Transport slices</h2>
+      </div>
+      <div class="btn-toolbar mb-2 mb-md-0">
+          <a href="/model.html" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
+              <svg class="icon icon-xs me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+              New Slice
+          </a>
+
+      </div>
+  </div>
+
+
+
+<div class="card card-body border-0 shadow table-wrapper table-responsive">
+
+    <table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+        <thead>
+        <tr>
+            <th class="th-sm"> slice name
+
+            </th>
+            <th class="th-sm">customer
+
+            </th>
+            <th class="th-sm">health Status
+
+            </th>
+            <th class="th-sm">operational Status
+
+            </th>
+            <th class="th-sm">Action
+
+            </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for slice in newdata %}
+        <tr>
+
+            <td scope="col">{{ slice.tsName }}</td>
+            <td scope="col">{{ slice.customerId }}</td>
+            <td scope="col">
+                {% if(slice.healthStatus) ==  'GREEN' %}
+               <span><i class="fa fa-circle" aria-hidden="true" style="color:green"></i> GREEN</span>
+                {% elif(slice.healthStatus) ==  'RED' %}
+                <span><i class="fa fa-circle" aria-hidden="true" style="color:red"></i> RED</span>
+                {% elif(slice.operStatus) ==  'PARTIALLY_DOWN' %}
+                <span><i class="fa fa-circle" aria-hidden="true" style="color:orange"></i> Partially Down</span>
+                {% else %}
+                <span class="badge bg-danger circle"></span>Not Available
+                {% endif %}
+
+            </td>
+            <td scope="col">
+                {% if(slice.operStatus) ==  'UP' %}
+                <span><i class="fa fa-arrow-up" aria-hidden="true" style="color:green"></i> Up</span>
+                {% elif(slice.operStatus) ==  'DOWN' %}
+                <span><i class="fa fa-arrow-down" aria-hidden="true" style="color:red"></i> Down</span>
+                {% else %}
+                <span></span>Not Available
+                {% endif %}
+            </td>
+
+            <td scope="col"><a><i class="fa fa-trash" style="font-size:30px;color:red"  id="deleteSlice" attr="{{slice.tsId}}" token="{{slice.token}}"></i></a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+{% endblock content %}
+{% block model %} {% endblock %}
+{% block javascripts %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+$(document).on('click','#deleteSlice',function(e){
+console.log("delete")
+var id = $(this).attr('attr');
+
+swal({
+  title: "Are you sure?",
+  text: "Once deleted, you will not be able to recover!",
+  icon: "warning",
+  buttons: true,
+  dangerMode: true,
+})
+.then((willDelete) => {
+$.get('/delete/'+id,function(data){
+ if(data == 'success')
+    {
+    swal("Slice Deleted Successfully!", {
+      icon: "success",
+    });
+    location.reload();
+
+    }
+    else{
+    swal("Error while deleting slice",{
+    icon: "error",
+    });
+    location.reload();
+    }
+});
+});
+ });
+
+</script>
+<script>
+
+            $(document).ready(function () {
+              $('#dtBasicExample').DataTable({
+                "paging": true // false to disable pagination (or any other option)
+              });
+              $('.dataTables_length').addClass('bs-select');
+            });
+</script>
+{% endblock javascripts %}

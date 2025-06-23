@@ -1,0 +1,169 @@
+
+{% extends "layouts/base.html" %}
+
+{% block title %} Transactions {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<style>
+    tr{
+    text-align: center;
+    }
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+    <div class="d-block mb-4 mb-md-0">
+        <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
+            <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+                <li class="breadcrumb-item">
+                    <a href="#">
+                        <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    </a>
+                </li>
+                <li class="breadcrumb-item"><a href="#">IGP Link Latency</a></li>
+            </ol>
+        </nav>
+        <h2 class="h4">IGP Links</h2>
+    </div>
+</div>
+
+
+
+<div class="card card-body border-0 shadow table-wrapper table-responsive">
+
+    <table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+        <thead>
+        <tr>
+            <th class="th-sm">Link Ip address
+
+            </th>
+            <th class="th-sm">source node
+
+            </th>
+            <th class="th-sm">destination node
+
+            </th>
+            <th class="th-sm">configured latency
+
+            </th>
+            <th class="th-sm">Action
+
+            </th>
+
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for user in newdata %}
+        <tr>
+            <td scope="col">{{ user.linkipaddress }}</td>
+            <td scope="col">
+                {% if(user.neNameSource) %}
+                <span>{{ user.sourceip }}({{user.neNameSource}})</span>
+                {% else %}
+                <span>{{ user.sourceip }}</span>
+                {% endif %}
+            </td>
+
+            <td scope="col">
+                {% if(user.neNameDestination) %}
+                <span>{{ user.destinationip }}({{user.neNameDestination}})</span>
+                {% else %}
+                <span>{{ user.destinationip }}</span>
+                {% endif %}
+            </td>
+
+            <td scope="col">{{ user.latency }}</td>
+
+            <td scope="col"><a type="button" class="" data-bs-toggle="modal" data-bs-target="#myOutput" id="updatelatency" attr="{{user.linkid}}" token="{{user.token}}">
+                <i class="fa fa-pencil-square-o" style='color: blue;font-size:25px' aria-hidden="true"></i>
+            </a></td>
+
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="myOutput">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Update Latency</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body text-center">
+                <div class="col-md-6 offset-2">
+                    <label> Latency </label>
+                    <input type="text" class="form-control" value="" id="latency" name="latency" required>
+                    <input type="hidden" class="form-control" value="" id="lantencyid" name="lantencyid">
+                    <input type="hidden" class="form-control" value="" id="token" name="token">
+                </div>
+
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" id="submitLatency">Update</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+
+
+$(document).on('click','#updatelatency',function(e){
+    var id = $(this).attr('attr');
+    $('#lantencyid').val(id);
+
+    });
+
+
+$(document).on('click','#submitLatency',function(e){
+    var linkid = $('#lantencyid').val();
+    var latency= $('#latency').val();
+
+    $.get('/update/'+linkid+'/'+latency,function(data){
+    if(data == 'success')
+    {
+    swal("Latency Updated Successfully!", {
+      icon: "success",
+    });
+    location.reload();
+
+    }
+    else{
+    swal("Error while updating latency",{
+    icon: "error",
+    });
+    location.reload();
+    }
+    });
+
+    });
+
+
+$(document).ready(function () {
+  $('#dtBasicExample').DataTable({
+    "paging": true // false to disable pagination (or any other option)
+  });
+  $('.dataTables_length').addClass('bs-select');
+});
+</script>
+{% endblock javascripts %}
